@@ -1,12 +1,14 @@
 #!/bin/bash
-
 set -x
 set -e
 
 DEBIAN_RELEASE=bookworm
+DEBIAN_ARCH=amd64
 DEBIAN_WORKDIR=debian-image-from-scratch
-DEBIAN_IMAGE_NAME=debian-${DEBIAN_RELEASE}-image
+RAW_DEBIAN_IMAGE_PATH=~/${DEBIAN_WORKDIR}/debian-${DEBIAN_RELEASE}-image.raw
 DEBIAN_CACHE=debian-cache
+
+# Scripts to be copied into target machine
 CHROOT_DEBIAN_CMDS=chroot_debian_cmds.sh
 CHROOT_VBOX_GUEST_ADDITIONS=chroot_install_vbox_guest_additions.sh
 
@@ -27,6 +29,7 @@ trap cleanup_exit EXIT
 rm -fR "${HOME:?}"/${DEBIAN_WORKDIR}
 mkdir "$HOME"/${DEBIAN_WORKDIR}
 
+# Use local cache if possible
 if [[ ! -d "$HOME"/${DEBIAN_CACHE} ]]; then
 	mkdir "$HOME"/${DEBIAN_CACHE}
 fi
@@ -34,14 +37,14 @@ fi
 # Create an empty virtual harddriver file (30Gb)
 dd \
   if=/dev/zero \
-  of=~/${DEBIAN_WORKDIR}/${DEBIAN_IMAGE_NAME}.raw \
+  of=${RAW_DEBIAN_IMAGE_PATH} \
   bs=1 \
   count=0 \
   seek=32212254720 \
   status=progress
   
 # Create partitions on the file
-sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | sudo fdisk ~/${DEBIAN_WORKDIR}/${DEBIAN_IMAGE_NAME}.raw 
+sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | sudo fdisk ${RAW_DEBIAN_IMAGE_PATH}
 o # clear the in memory partition table
 n # new partition
 p # primary partition
@@ -61,7 +64,7 @@ q # and we're done
 EOF
 
 # Start the loop device
-sudo losetup -fP ~/${DEBIAN_WORKDIR}/${DEBIAN_IMAGE_NAME}.raw
+sudo losetup -fP ${RAW_DEBIAN_IMAGE_PATH}
 
 # Check the status of the loop device
 sudo losetup -a
@@ -87,10 +90,9 @@ sudo mount /dev/loop0p1 ~/${DEBIAN_WORKDIR}/chroot/boot
 
 # Bootstrap debian by running debootstrap
 sudo debootstrap \
-   --arch=amd64 \
+   --arch=${DEBIAN_ARCH} \
    --variant=minbase \
    --cache-dir="$HOME"/${DEBIAN_CACHE} \
-   --components "main" \
    --include "ca-certificates,cron,iptables,isc-dhcp-client,libnss-myhostname,ntp,ntpdate,rsyslog,ssh,sudo,dialog,whiptail,man-db,curl,dosfstools,e2fsck-static" \
    ${DEBIAN_RELEASE} \
    "$HOME"/${DEBIAN_WORKDIR}/chroot \

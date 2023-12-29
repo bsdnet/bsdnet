@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -x
 set -e
 
@@ -14,7 +13,7 @@ export HOME=/root
 export LC_ALL=C
 
 # Set a custom hostname
-echo "debian-image" > /etc/hostname
+echo "debian-${DEBIAN_RELEASE}-image" > /etc/hostname
 
 # Configure apt sources.list
 cat <<EOF > /etc/apt/sources.list

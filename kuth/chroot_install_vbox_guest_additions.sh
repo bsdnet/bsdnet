@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -x
 set -e
 
@@ -14,9 +13,8 @@ mount -o loop VBoxGuestAdditions_${VIRTUALBOX_VERSION}.iso /mnt
 # Install Guest Additions
 /mnt/VBoxLinuxAdditions.run --nox11
 
-# Generate modules
+# Generate kernel modules
 KERNEL_VERSION=$(ls /lib/modules)
-
 rcvboxadd quicksetup "${KERNEL_VERSION}"
 
 # Umount and remove the ISO file
