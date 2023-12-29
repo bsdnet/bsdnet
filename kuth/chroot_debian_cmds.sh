@@ -47,7 +47,6 @@ apt-get update
 # Install systemd
 apt-get install -y systemd-sysv
 
-
 # Configure machine-id
 dbus-uuidgen > /etc/machine-id
 
@@ -123,8 +122,8 @@ grub-install /dev/loop0
 # Update grub configuration
 update-grub
 
-#Install VirtualBox Guest Additions
-install_vbox_guest_additions.sh
+# Install VirtualBox Guest Additions
+./chroot_install_vbox_guest_additions.sh
 
 # Reset machine id
 truncate -s 0 /etc/machine-id
@@ -137,15 +136,11 @@ dpkg-divert --rename --remove /sbin/initctl
 # Clean up
 
 apt-get autoclean
-
 rm -rf /tmp/* ~/.bash_history
 
 umount /proc
-
 umount /sys
-
 umount /dev/pts
 
 export HISTSIZE=0
-
 exit

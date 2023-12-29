@@ -6,8 +6,22 @@ set -e
 DEBIAN_RELEASE=bookworm
 DEBIAN_WORKDIR=debian-image-from-scratch
 DEBIAN_IMAGE_NAME=debian-${DEBIAN_RELEASE}-image
-DEBIAN_CHROOT_CMD=debian_chroot_cmd.sh
 DEBIAN_CACHE=debian-cache
+CHROOT_DEBIAN_CMDS=chroot_debian_cmds.sh
+CHROOT_VBOX_GUEST_ADDITIONS=chroot_install_vbox_guest_additions.sh
+
+function cleanup_exit {
+  # Unbind mount points
+  sudo umount "$HOME"/${DEBIAN_WORKDIR}/chroot/dev
+  sudo umount "$HOME"/${DEBIAN_WORKDIR}/chroot/run
+
+  # Umount loop partitions
+  sudo umount "$HOME"/${DEBIAN_WORKDIR}/chroot/boot
+  sudo umount "$HOME"/${DEBIAN_WORKDIR}/chroot
+}
+
+# Call the cleanup_exit whenever exit
+trap cleanup_exit EXIT
 
 # Create a folder to store the image
 rm -fR "${HOME:?}"/${DEBIAN_WORKDIR}
@@ -63,20 +77,19 @@ sudo mkfs.ext4 /dev/loop0p2
 
 # Create the chroot directory
 mkdir ~/${DEBIAN_WORKDIR}/chroot
+sudo mkdir ~/${DEBIAN_WORKDIR}/chroot/boot
 
 # Mount the root partition
-
 sudo mount /dev/loop0p2 ~/${DEBIAN_WORKDIR}/chroot
 
 # Create and mount the boot partition
-sudo mkdir ~/${DEBIAN_WORKDIR}/chroot/boot
 sudo mount /dev/loop0p1 ~/${DEBIAN_WORKDIR}/chroot/boot
 
 # Bootstrap debian by running debootstrap
 sudo debootstrap \
    --arch=amd64 \
    --variant=minbase \
-   --cache-dir=${DEBIAN_CACHE} \
+   --cache-dir="$HOME"/${DEBIAN_CACHE} \
    --components "main" \
    --include "ca-certificates,cron,iptables,isc-dhcp-client,libnss-myhostname,ntp,ntpdate,rsyslog,ssh,sudo,dialog,whiptail,man-db,curl,dosfstools,e2fsck-static" \
    ${DEBIAN_RELEASE} \
@@ -87,7 +100,12 @@ sudo debootstrap \
 sudo mount --bind /dev "$HOME"/${DEBIAN_WORKDIR}/chroot/dev
 sudo mount --bind /run "$HOME"/${DEBIAN_WORKDIR}/chroot/run
 
-# sudo chroot ${HOME}/${DEBIAN_WORKDIR}/chroot ${DEBIAN_CHROOT_CMD}
+# Copy script into chroot
+sudo cp ${CHROOT_DEBIAN_CMDS} ~/${DEBIAN_WORKDIR}/chroot/
+sudo cp ${CHROOT_VBOX_GUEST_ADDITIONS} ~/${DEBIAN_WORKDIR}/chroot/
+
+# Chroot and execute the script.
+sudo chroot "$HOME"/${DEBIAN_WORKDIR}/chroot ./${CHROOT_DEBIAN_CMDS}
 
 # Unbind mount points
 sudo umount "$HOME"/${DEBIAN_WORKDIR}/chroot/dev
