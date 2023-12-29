@@ -6,9 +6,16 @@ set -e
 DEBIAN_RELEASE=bookworm
 DEBIAN_WORKDIR=debian-image-from-scratch
 DEBIAN_IMAGE_NAME=debian-${DEBIAN_RELEASE}-image
+DEBIAN_CHROOT_CMD=debian_chroot_cmd.sh
+DEBIAN_CACHE=debian-cache
 
 # Create a folder to store the image
-mkdir $HOME/${DEBIAN_WORKDIR}
+rm -fR "${HOME:?}"/${DEBIAN_WORKDIR}
+mkdir "$HOME"/${DEBIAN_WORKDIR}
+
+if [[ ! -d "$HOME"/${DEBIAN_CACHE} ]]; then
+	mkdir "$HOME"/${DEBIAN_CACHE}
+fi
 
 # Create an empty virtual harddriver file (30Gb)
 dd \
@@ -69,15 +76,36 @@ sudo mount /dev/loop0p1 ~/${DEBIAN_WORKDIR}/chroot/boot
 sudo debootstrap \
    --arch=amd64 \
    --variant=minbase \
+   --cache-dir=${DEBIAN_CACHE} \
    --components "main" \
    --include "ca-certificates,cron,iptables,isc-dhcp-client,libnss-myhostname,ntp,ntpdate,rsyslog,ssh,sudo,dialog,whiptail,man-db,curl,dosfstools,e2fsck-static" \
    ${DEBIAN_RELEASE} \
-   $HOME/${DEBIAN_WORKDIR}/chroot \
+   "$HOME"/${DEBIAN_WORKDIR}/chroot \
    http://deb.debian.org/debian/
    
 # Configure external mount points
-sudo mount --bind /dev $HOME/${DEBIAN_WORKDIR}/chroot/dev
-sudo mount --bind /run $HOME/${DEBIAN_WORKDIR}/chroot/run
+sudo mount --bind /dev "$HOME"/${DEBIAN_WORKDIR}/chroot/dev
+sudo mount --bind /run "$HOME"/${DEBIAN_WORKDIR}/chroot/run
 
-sudo chroot HOME/${DEBIAN_WORKDIR}/chroot ${DEBIAN_CHROOT_CMD}
+# sudo chroot ${HOME}/${DEBIAN_WORKDIR}/chroot ${DEBIAN_CHROOT_CMD}
 
+# Unbind mount points
+sudo umount "$HOME"/${DEBIAN_WORKDIR}/chroot/dev
+sudo umount "$HOME"/${DEBIAN_WORKDIR}/chroot/run
+
+# Umount loop partitions
+sudo umount "$HOME"/${DEBIAN_WORKDIR}/chroot/boot
+sudo umount "$HOME"/${DEBIAN_WORKDIR}/chroot
+
+# Check disks integrity
+sudo fsck -f -y -v /dev/loop0p1
+sudo fsck -f -y -v /dev/loop0p2
+
+# Detach all associated loop devices
+sudo losetup -D
+
+# Create the VirtualBox base image
+# create_vbox_base_image.sh
+
+# Clean up
+# rm -rf "$HOME"/${DEBIAN_WORKDIR}
