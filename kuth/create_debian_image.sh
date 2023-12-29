@@ -57,7 +57,7 @@ dd \
 parted -s -a optimal -- ${RAW_DEBIAN_IMAGE_PATH} \
 	mklabel gpt \
 	mkpart primary fat32 1MiB 256MiB \
-	mkpart primary ext2  256MiB $MiB \
+	mkpart primary ext2  256MiB 5376MiB \
         mkpart primary ext2  5376MiB 10490MiB \
         mkpart primary ext4  10490MiB 10624MiB  \
         mkpart primary ext4  10624MiB 15744MiB\
@@ -100,14 +100,12 @@ sudo mkfs.ext4 /dev/loop0p1
 # Format the loop0p2 device(/)
 sudo mkfs.ext4 /dev/loop0p2
 
-# Create the chroot directory
+# Create and mount root directory
 mkdir ~/${DEBIAN_WORKDIR}/chroot
-sudo mkdir ~/${DEBIAN_WORKDIR}/chroot/boot
-
-# Mount the root partition
 sudo mount /dev/loop0p2 ~/${DEBIAN_WORKDIR}/chroot
 
 # Create and mount the boot partition
+sudo mkdir ~/${DEBIAN_WORKDIR}/chroot/boot
 sudo mount /dev/loop0p1 ~/${DEBIAN_WORKDIR}/chroot/boot
 
 # Bootstrap debian by running debootstrap

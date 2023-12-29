@@ -80,11 +80,24 @@ auto lo
 iface lo inet loopback
 EOF
 
+# Configure the timezone
+debconf-set-selections <<EOF
+tzdata tzdata/Areas select Europe
+tzdata tzdata/Zones/Europe select London
+EOF
+# This is necessary as tzdata will assume these are manually set and override the debconf values with their settings
+rm -f /etc/localtime /etc/timezone
+DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive tzdata
+
 # Reconfigure the locales
-dpkg-reconfigure locales
+debconf-set-selections <<EOF
+locales locales/locales_to_be_generated multiselect en_US.UTF-8 UTF-8
+locales locales/default_environment_locale select en_US.UTF-8
+EOF
+DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure --frontend=noninteractive locales
 
 # Reconfigure resolveconf
-dpkg-reconfigure resolvconf
+DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure --frontend=noninteractive resolvconf
 
 # Configure network-manager
 cat <<EOF > /etc/NetworkManager/NetworkManager.conf
@@ -104,7 +117,7 @@ systemctl mask systemd-networkd.socket systemd-networkd networkd-dispatcher syst
 systemctl mask systemd-resolved
 
 # Reconfigure network-manager
-dpkg-reconfigure network-manager
+DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure --frontend=noninteractive network-manager
 
 # Configure the grub
 cat <<EOF > /etc/default/grub
