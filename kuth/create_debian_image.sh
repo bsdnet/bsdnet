@@ -12,6 +12,15 @@ DEBIAN_CACHEDIR="$HOME"/debian-cache
 CHROOT_DEBIAN_CMDS=chroot_debian_cmds.sh
 CHROOT_VBOX_GUEST_ADDITIONS=chroot_install_vbox_guest_additions.sh
 
+function prepare_mountpoints {
+  # Configure external mount points
+  sudo mount --bind /dev ${DEBIAN_WORKDIR}/chroot/dev
+  sudo mount --bind /run ${DEBIAN_WORKDIR}/chroot/run
+  sudo mount -t proc none ${DEBIAN_WORKDIR}/chroot/proc
+  sudo mount -t sysfs none ${DEBIAN_WORKDIR}/chroot/sys
+  sudo mount -t devpts none ${DEBIAN_WORKDIR}/chroot//dev/pts
+}
+
 function cleanup_exit {
   # Unbind mount points
   sudo umount ${DEBIAN_WORKDIR}/chroot/proc
@@ -23,6 +32,9 @@ function cleanup_exit {
   # Umount loop partitions
   sudo umount ${DEBIAN_WORKDIR}/chroot/boot
   sudo umount ${DEBIAN_WORKDIR}/chroot
+
+  # Detach all associated loop devices
+  sudo losetup -D
 }
 
 # Call the cleanup_exit whenever exit
@@ -121,31 +133,24 @@ sudo debootstrap \
    ${DEBIAN_WORKDIR}/chroot \
    http://deb.debian.org/debian/
    
-# Configure external mount points
-sudo mount --bind /dev ${DEBIAN_WORKDIR}/chroot/dev
-sudo mount --bind /run ${DEBIAN_WORKDIR}/chroot/run
-sudo mount -t proc none ${DEBIAN_WORKDIR}/chroot/proc
-sudo mount -t sysfs none ${DEBIAN_WORKDIR}/chroot/sys
-sudo mount -t devpts none ${DEBIAN_WORKDIR}/chroot//dev/pts
-
 # Copy script into chroot
 sudo cp ${CHROOT_DEBIAN_CMDS} ${DEBIAN_WORKDIR}/chroot/
 sudo cp ${CHROOT_VBOX_GUEST_ADDITIONS} ${DEBIAN_WORKDIR}/chroot/
 
+# Prepare mount points for chroot
+prepare_mountpoints
+
 # Chroot and execute the script.
 sudo chroot ${DEBIAN_WORKDIR}/chroot ./${CHROOT_DEBIAN_CMDS}
-
-cleanup_exit
 
 # Check disks integrity
 sudo fsck -f -y -v /dev/loop0p1
 sudo fsck -f -y -v /dev/loop0p2
 
-# Detach all associated loop devices
-sudo losetup -D
-
 # Create the VirtualBox base image
-# create_vbox_base_image.sh
+./create_vbox_base_image.sh
 
 # Clean up
-# rm -rf ${DEBIAN_WORKDIR}
+cleanup_exit
+
+rm -rf ${DEBIAN_WORKDIR} 

@@ -141,7 +141,7 @@ dpkg-divert --rename --remove /sbin/initctl
 # Clean up
 
 apt-get autoclean
-rm -rf /tmp/* ~/.bash_history
+rm -rf /tmp/* $HOME/.bash_history
 
 export HISTSIZE=0
 exit
