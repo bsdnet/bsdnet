@@ -86,7 +86,6 @@ rm -f /etc/localtime /etc/timezone
 DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure tzdata
 
 # Reconfigure the locales
-echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' > /etc/default/locale
 locale-gen --purge en_US.UTF-8
 DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure locales
 

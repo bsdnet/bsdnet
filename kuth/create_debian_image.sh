@@ -116,7 +116,7 @@ sudo debootstrap \
    --arch=${DEBIAN_ARCH} \
    --variant=minbase \
    --cache-dir=${DEBIAN_CACHEDIR} \
-   --include "ca-certificates,cron,iptables,isc-dhcp-client,libnss-myhostname,ntp,ntpdate,rsyslog,ssh,sudo,dialog,whiptail,man-db,curl,dosfstools,e2fsck-static" \
+   --include "ca-certificates,cron,iptables,isc-dhcp-client,libnss-myhostname,chrony,rsyslog,ssh,sudo,dialog,whiptail,man-db,curl,dosfstools,e2fsck-static" \
    ${DEBIAN_RELEASE} \
    ${DEBIAN_WORKDIR}/chroot \
    http://deb.debian.org/debian/
