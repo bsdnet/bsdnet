@@ -4,9 +4,9 @@ set -e
 
 DEBIAN_RELEASE=bookworm
 DEBIAN_ARCH=amd64
-DEBIAN_WORKDIR=debian-image-from-scratch
-RAW_DEBIAN_IMAGE_PATH=~/${DEBIAN_WORKDIR}/debian-${DEBIAN_RELEASE}-image.raw
-DEBIAN_CACHE=debian-cache
+DEBIAN_WORKDIR="$HOME"/debian-image-from-scratch
+RAW_DEBIAN_IMAGE_PATH=${DEBIAN_WORKDIR}/debian-${DEBIAN_RELEASE}-image.raw
+DEBIAN_CACHEDIR="$HOME"/debian-cache
 
 # Scripts to be copied into target machine
 CHROOT_DEBIAN_CMDS=chroot_debian_cmds.sh
@@ -14,24 +14,27 @@ CHROOT_VBOX_GUEST_ADDITIONS=chroot_install_vbox_guest_additions.sh
 
 function cleanup_exit {
   # Unbind mount points
-  sudo umount "$HOME"/${DEBIAN_WORKDIR}/chroot/dev
-  sudo umount "$HOME"/${DEBIAN_WORKDIR}/chroot/run
-
+  sudo umount ${DEBIAN_WORKDIR}/chroot/proc
+  sudo umount ${DEBIAN_WORKDIR}/chroot/sys
+  sudo umount ${DEBIAN_WORKDIR}/chroot/dev/pts
+  sudo umount ${DEBIAN_WORKDIR}/chroot/dev
+  sudo umount ${DEBIAN_WORKDIR}/chroot/run
+  
   # Umount loop partitions
-  sudo umount "$HOME"/${DEBIAN_WORKDIR}/chroot/boot
-  sudo umount "$HOME"/${DEBIAN_WORKDIR}/chroot
+  sudo umount ${DEBIAN_WORKDIR}/chroot/boot
+  sudo umount ${DEBIAN_WORKDIR}/chroot
 }
 
 # Call the cleanup_exit whenever exit
 trap cleanup_exit EXIT
 
 # Create a folder to store the image
-rm -fR "${HOME:?}"/${DEBIAN_WORKDIR}
-mkdir "$HOME"/${DEBIAN_WORKDIR}
+rm -fR ${DEBIAN_WORKDIR}
+mkdir ${DEBIAN_WORKDIR}
 
 # Use local cache if possible
-if [[ ! -d "$HOME"/${DEBIAN_CACHE} ]]; then
-	mkdir "$HOME"/${DEBIAN_CACHE}
+if [[ ! -d ${DEBIAN_CACHEDIR} ]]; then
+	mkdir ${DEBIAN_CACHEDIR}
 fi
 
 # Create an empty virtual harddriver file (30Gb)
@@ -101,41 +104,38 @@ sudo mkfs.ext4 /dev/loop0p1
 sudo mkfs.ext4 /dev/loop0p2
 
 # Create and mount root directory
-mkdir ~/${DEBIAN_WORKDIR}/chroot
-sudo mount /dev/loop0p2 ~/${DEBIAN_WORKDIR}/chroot
+mkdir ${DEBIAN_WORKDIR}/chroot
+sudo mount /dev/loop0p2 ${DEBIAN_WORKDIR}/chroot
 
 # Create and mount the boot partition
-sudo mkdir ~/${DEBIAN_WORKDIR}/chroot/boot
-sudo mount /dev/loop0p1 ~/${DEBIAN_WORKDIR}/chroot/boot
+sudo mkdir ${DEBIAN_WORKDIR}/chroot/boot
+sudo mount /dev/loop0p1 ${DEBIAN_WORKDIR}/chroot/boot
 
 # Bootstrap debian by running debootstrap
 sudo debootstrap \
    --arch=${DEBIAN_ARCH} \
    --variant=minbase \
-   --cache-dir="$HOME"/${DEBIAN_CACHE} \
+   --cache-dir=${DEBIAN_CACHEDIR} \
    --include "ca-certificates,cron,iptables,isc-dhcp-client,libnss-myhostname,ntp,ntpdate,rsyslog,ssh,sudo,dialog,whiptail,man-db,curl,dosfstools,e2fsck-static" \
    ${DEBIAN_RELEASE} \
-   "$HOME"/${DEBIAN_WORKDIR}/chroot \
+   ${DEBIAN_WORKDIR}/chroot \
    http://deb.debian.org/debian/
    
 # Configure external mount points
-sudo mount --bind /dev "$HOME"/${DEBIAN_WORKDIR}/chroot/dev
-sudo mount --bind /run "$HOME"/${DEBIAN_WORKDIR}/chroot/run
+sudo mount --bind /dev ${DEBIAN_WORKDIR}/chroot/dev
+sudo mount --bind /run ${DEBIAN_WORKDIR}/chroot/run
+sudo mount -t proc none ${DEBIAN_WORKDIR}/chroot/proc
+sudo mount -t sysfs none ${DEBIAN_WORKDIR}/chroot/sys
+sudo mount -t devpts none ${DEBIAN_WORKDIR}/chroot//dev/pts
 
 # Copy script into chroot
-sudo cp ${CHROOT_DEBIAN_CMDS} ~/${DEBIAN_WORKDIR}/chroot/
-sudo cp ${CHROOT_VBOX_GUEST_ADDITIONS} ~/${DEBIAN_WORKDIR}/chroot/
+sudo cp ${CHROOT_DEBIAN_CMDS} ${DEBIAN_WORKDIR}/chroot/
+sudo cp ${CHROOT_VBOX_GUEST_ADDITIONS} ${DEBIAN_WORKDIR}/chroot/
 
 # Chroot and execute the script.
-LANG=C.UTF-8 sudo chroot "$HOME"/${DEBIAN_WORKDIR}/chroot ./${CHROOT_DEBIAN_CMDS}
+sudo chroot ${DEBIAN_WORKDIR}/chroot ./${CHROOT_DEBIAN_CMDS}
 
-# Unbind mount points
-sudo umount "$HOME"/${DEBIAN_WORKDIR}/chroot/dev
-sudo umount "$HOME"/${DEBIAN_WORKDIR}/chroot/run
-
-# Umount loop partitions
-sudo umount "$HOME"/${DEBIAN_WORKDIR}/chroot/boot
-sudo umount "$HOME"/${DEBIAN_WORKDIR}/chroot
+cleanup_exit
 
 # Check disks integrity
 sudo fsck -f -y -v /dev/loop0p1
@@ -148,4 +148,4 @@ sudo losetup -D
 # create_vbox_base_image.sh
 
 # Clean up
-# rm -rf "$HOME"/${DEBIAN_WORKDIR}
+# rm -rf ${DEBIAN_WORKDIR}

@@ -4,13 +4,9 @@ set -e
 
 DEBIAN_RELEASE=bookworm
 
-# Configure the mount points, home and locale
-mount none -t proc /proc
-mount none -t sysfs /sys
-mount none -t devpts /dev/pts
-
 export HOME=/root
 export LC_ALL=C
+export DEBIAN_FRONTEND=noninteractive
 
 # Set a custom hostname
 echo "debian-${DEBIAN_RELEASE}-image" > /etc/hostname
@@ -82,22 +78,20 @@ EOF
 
 # Configure the timezone
 debconf-set-selections <<EOF
-tzdata tzdata/Areas select Europe
-tzdata tzdata/Zones/Europe select London
+tzdata tzdata/Areas select America
+tzdata tzdata/Zones/America select Los_Angeles
 EOF
 # This is necessary as tzdata will assume these are manually set and override the debconf values with their settings
 rm -f /etc/localtime /etc/timezone
-DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive tzdata
+DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure tzdata
 
 # Reconfigure the locales
-debconf-set-selections <<EOF
-locales locales/locales_to_be_generated multiselect en_US.UTF-8 UTF-8
-locales locales/default_environment_locale select en_US.UTF-8
-EOF
-DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure --frontend=noninteractive locales
+echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' > /etc/default/locale
+locale-gen --purge en_US.UTF-8
+DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure locales
 
 # Reconfigure resolveconf
-DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure --frontend=noninteractive resolvconf
+DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure resolvconf
 
 # Configure network-manager
 cat <<EOF > /etc/NetworkManager/NetworkManager.conf
@@ -117,7 +111,7 @@ systemctl mask systemd-networkd.socket systemd-networkd networkd-dispatcher syst
 systemctl mask systemd-resolved
 
 # Reconfigure network-manager
-DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure --frontend=noninteractive network-manager
+DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure network-manager
 
 # Configure the grub
 cat <<EOF > /etc/default/grub
@@ -149,10 +143,6 @@ dpkg-divert --rename --remove /sbin/initctl
 
 apt-get autoclean
 rm -rf /tmp/* ~/.bash_history
-
-umount /proc
-umount /sys
-umount /dev/pts
 
 export HISTSIZE=0
 exit
