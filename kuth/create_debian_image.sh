@@ -59,46 +59,11 @@ dd \
   status=progress
   
 # Create partitions on the disk
-# Disk layout
-# 1 EFI-SYSTEM  Bootloader FAT32      256M
-# 2 ROOT-A      Root filesystem  EXT2 5G
-# 3 ROOT-B      Root filesystem  EXT2 5G
-# 4 CFG         Configuration    EXT4 128M
-# 5 DATA1        Data partition  EXT4 5G // For container image or customer installed application
-# 6 DATA2        Data partition  EXT4 5G // For obeservility metrics
-# 7 LOG         Log partition    EXT4 10G
-#
-: <<comment
-parted -s -a optimal -- ${RAW_DEBIAN_IMAGE_PATH} \
-	mklabel gpt \
-	mkpart primary fat32 1MiB 256MiB \
-	mkpart primary ext2  256MiB 5376MiB \
-        mkpart primary ext2  5376MiB 10490MiB \
-        mkpart primary ext4  10490MiB 10624MiB  \
-        mkpart primary ext4  10624MiB 15744MiB\
-        mkpart primary ext4  15744GiB 20864MiB\
-        mkpart primary ext4  20864MiB  \
-        set 1 esp on
-comment
+parted ${RAW_DEBIAN_IMAGE_PATH} --script mklabel gpt
+parted ${RAW_DEBIAN_IMAGE_PATH} --script mkpart EFI fat32 1MiB 256MiB
+parted ${RAW_DEBIAN_IMAGE_PATH} --script set 1 esp on
 
-sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | sudo fdisk ${RAW_DEBIAN_IMAGE_PATH}
-o # clear the in memory partition table
-n # new partition
-p # primary partition
-1 # partition number 1 
-    # default - start at beginning of disk
-+512M # 512 MB boot parttion
-n # new partition
-p # primary partition
-2 # partion number 2
-    # default, start immediately after preceding partition
-    # default, extend partition to end of disk
-a # make a partition bootable
-1 # bootable partition is partition 1 -- /dev/loop0p1
-p # print the in-memory partition table
-w # write the partition table
-q # and we're done
-EOF
+parted ${RAW_DEBIAN_IMAGE_PATH} --script mkpart LINUX ext4 1MiB 100% 
 
 # Start the loop device
 sudo losetup -fP ${RAW_DEBIAN_IMAGE_PATH}
@@ -107,13 +72,13 @@ sudo losetup -fP ${RAW_DEBIAN_IMAGE_PATH}
 sudo losetup -a
 
 # Check the partions on the loop device
-sudo fdisk -l /dev/loop0
+sudo parted /dev/loop0 print
 
-# Format the loop0p1 device(/bot)
-sudo mkfs.ext4 /dev/loop0p1
+# Format the loop0p1 device(/efi)
+sudo mkfs.vfat -n EFI /dev/loop0p1
 
 # Format the loop0p2 device(/)
-sudo mkfs.ext4 /dev/loop0p2
+sudo mkfs.ext4 -L LINUX /dev/loop0p2
 
 # Create and mount root directory
 mkdir ${DEBIAN_WORKDIR}/chroot
