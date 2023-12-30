@@ -60,10 +60,11 @@ dd \
   
 # Create partitions on the disk
 parted ${RAW_DEBIAN_IMAGE_PATH} --script mklabel gpt
-parted ${RAW_DEBIAN_IMAGE_PATH} --script mkpart EFI fat32 1MiB 256MiB
+parted --align optimal ${RAW_DEBIAN_IMAGE_PATH} --script mkpart EFI fat32 1MiB 256MiB
 parted ${RAW_DEBIAN_IMAGE_PATH} --script set 1 esp on
 
-parted ${RAW_DEBIAN_IMAGE_PATH} --script mkpart LINUX ext4 1MiB 100% 
+# Create Linux partition
+parted --align optimal ${RAW_DEBIAN_IMAGE_PATH} --script mkpart LINUX ext4 256MiB 100%
 
 # Start the loop device
 sudo losetup -fP ${RAW_DEBIAN_IMAGE_PATH}
