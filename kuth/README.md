@@ -1,8 +1,7 @@
 ## What does Kuth mean?
 
 Kuth means `Kubernetes under the Hood`.
-The directory contains the scripts I wrote for [Kubernetes under the Hood]
-(https://github.com/mvallim/kubernetes-under-the-hood)
+The directory contains the scripts I wrote for [Kubernetes under the Hood](https://github.com/mvallim/kubernetes-under-the-hood)
 
 Those scripts will make testing and optimizing easier.
 
