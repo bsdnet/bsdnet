@@ -45,4 +45,7 @@ Different from the original repo, I did a lot of  improvements:
 - [Switch Debian from legacy to UEFI boot mode](https://blog.getreu.net/projects/legacy-to-uefi-boot/#_create_a_gpt_partition_table)
 - [Installation of Debian 11 UEFI on USB stick using 'debootstrap'](https://ivanb.neocities.org/blogs/y2022/debootstrap)
 - [Configure Chrony NTP Server on Debian 12/11/10](https://techviewleo.com/how-to-configure-chrony-ntp-server-on-debian/)
-- [build-debian-qemu-image](https://github.com/loz-hurst/build-debian-qemu-image/blob/master/build-debian-image)  
+- [build-debian-qemu-image](https://github.com/loz-hurst/build-debian-qemu-image/blob/master/build-debian-image)
+
+### APIs
+- [LDAP Apis](https://ldap.com/client-apis/)
