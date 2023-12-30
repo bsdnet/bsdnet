@@ -18,6 +18,7 @@ Different from the original repo, I did a lot of  improvements:
 - Additional footprint for easier experiments.
 
 ## Reference
+- [Scalable and secure access with SSH](https://engineering.fb.com/2016/09/12/security/scalable-and-secure-access-with-ssh/)
 - [Alternative Firmware (EFI)](https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/efi.html#efividmode)
 - [Switch Debian from legacy to UEFI boot mode](https://blog.getreu.net/projects/legacy-to-uefi-boot/#_create_a_gpt_partition_table)
 - [Installation of Debian 11 UEFI on USB stick using 'debootstrap'](https://ivanb.neocities.org/blogs/y2022/debootstrap)
