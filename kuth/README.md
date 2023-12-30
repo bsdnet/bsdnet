@@ -21,6 +21,10 @@ Different from the original repo, I did a lot of  improvements:
 ### Secure Boot
 - [SecureBoot](https://wiki.debian.org/SecureBoot)
 
+### Vulnerability
+- [NVM APIs](https://nvd.nist.gov/developers/vulnerabilities)
+- [Debian Security Tracker](https://security-team.debian.org/security_tracker.html)
+
 ### Certificate
 - [OpenSSL Tutorial](https://www.cs.toronto.edu/~arnold/427/19s/427_19S/tool/ssl/notes.pdf)
 - [OpenSSL PKI Tutorial v1.1](https://pki-tutorial.readthedocs.io/en/latest/#)
