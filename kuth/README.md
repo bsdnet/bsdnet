@@ -36,7 +36,7 @@ Different from the original repo, I did a lot of  improvements:
 - [SSH Certificates Security](https://goteleport.com/blog/ssh-certificates/)
 - [Scalable and secure access with SSH](https://engineering.fb.com/2016/09/12/security/scalable-and-secure-access-with-ssh/)
 
-### Logging, Metrics, Traces and Events 
+### Logging, Metrics, Traces and Events
 - [Prometheus](https://prometheus.io)
 - [Fluentbit](https://docs.fluentbit.io/manual/administration/configuring-fluent-bit)
 

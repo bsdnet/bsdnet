@@ -22,7 +22,7 @@ function cleanup_after_chroot {
   sudo umount ${DEBIAN_WORKDIR}/chroot/dev/pts
   sudo umount ${DEBIAN_WORKDIR}/chroot/dev
   sudo umount ${DEBIAN_WORKDIR}/chroot/run
-  
+
   # Umount loop partitions
   sudo umount ${DEBIAN_WORKDIR}/chroot/boot/efi
   sudo umount ${DEBIAN_WORKDIR}/chroot

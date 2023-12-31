@@ -28,7 +28,7 @@ function cleanup_after_chroot {
   sudo umount ${DEBIAN_WORKDIR}/chroot/dev/pts
   sudo umount ${DEBIAN_WORKDIR}/chroot/dev
   sudo umount ${DEBIAN_WORKDIR}/chroot/run
-  
+
   # Umount loop partitions
   sudo umount ${DEBIAN_WORKDIR}/chroot/boot/efi
   sudo umount ${DEBIAN_WORKDIR}/chroot
@@ -50,7 +50,7 @@ fi
 dd if=/dev/zero of=${RAW_DEBIAN_IMAGE_PATH} \
   bs=1 count=0 seek=32212254720 \
   status=progress
-  
+
 # Create partitions on the disk
 parted ${RAW_DEBIAN_IMAGE_PATH} --script mklabel gpt
 parted --align optimal ${RAW_DEBIAN_IMAGE_PATH} --script mkpart primary fat32 1MiB 256MiB
@@ -92,7 +92,7 @@ sudo debootstrap \
    ${DEBIAN_RELEASE} \
    ${DEBIAN_WORKDIR}/chroot \
    http://deb.debian.org/debian/
-   
+
 # Copy scripts into chroot
 sudo cp ${CHROOT_DEBIAN_CMDS}          "${DEBIAN_WORKDIR}"/chroot/
 sudo cp ${CHROOT_VBOX_GUEST_ADDITIONS} "${DEBIAN_WORKDIR}"/chroot/

@@ -1,6 +1,6 @@
 # Disk Layout
 
-# Paritition 
+# Paritition
 ```
  1 EFI-SYSTEM  Bootloader FAT32      256M
  2 ROOT-A      Root filesystem  EXT2 5G
