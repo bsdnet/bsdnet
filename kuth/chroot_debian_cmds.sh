@@ -33,7 +33,7 @@ cat <<EOF > /etc/fstab
 #
 # <file system>         <mount point>   <type>  <options>                       <dump>  <pass>
 /dev/sda2               /               ext4    errors=remount-ro               0       1
-/dev/sda1               /boot           ext4    defaults                        0       2
+/dev/sda1               /boot/efi       vfat    defaults                        0       2
 EOF
 
 # Update the apt packages indexes
@@ -59,8 +59,8 @@ apt-get install -y \
     build-essential \
     module-assistant \
     cloud-init \
-    grub-pc \
-    grub2 \
+    grub-efi \
+    grub-efi-amd64 \
     linux-image-amd64 \
     linux-headers-amd64
 
@@ -77,12 +77,6 @@ iface lo inet loopback
 EOF
 
 # Configure the timezone
-debconf-set-selections <<EOF
-tzdata tzdata/Areas select America
-tzdata tzdata/Zones/America select Los_Angeles
-EOF
-# This is necessary as tzdata will assume these are manually set and override the debconf values with their settings
-rm -f /etc/localtime /etc/timezone
 DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure tzdata
 
 # Reconfigure the locales
@@ -122,10 +116,14 @@ GRUB_CMDLINE_LINUX=""
 EOF
 
 # Install grub
-grub-install /dev/loop0
+grub-install --target x86_64-efi
 
 # Update grub configuration
 update-grub
+
+# Make it bootable for Virtualbox
+mkdir /boot/efi/EFI/BOOT
+cp /boot/efi/EFI/debian/fbx64.efi /boot/efi/EFI/BOOT/bootx64.efi
 
 # Install VirtualBox Guest Additions
 ./chroot_install_vbox_guest_additions.sh
