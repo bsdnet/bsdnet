@@ -8,9 +8,6 @@ export HOME=/root
 export LC_ALL=C
 export DEBIAN_FRONTEND=noninteractive
 
-# Set a custom hostname
-echo "debian-${DEBIAN_RELEASE}-image" > /etc/hostname
-
 # Configure apt sources.list
 cat <<EOF > /etc/apt/sources.list
 deb http://deb.debian.org/debian/ ${DEBIAN_RELEASE} main contrib non-free
@@ -63,6 +60,9 @@ apt-get install -y \
     grub-efi-amd64 \
     linux-image-amd64 \
     linux-headers-amd64
+
+# Set a custom hostname
+echo "debian-${DEBIAN_RELEASE}-image" > /etc/hostname
 
 # Configure the network interfaces
 cat <<EOF > /etc/network/interfaces
@@ -140,6 +140,7 @@ dpkg-divert --rename --remove /sbin/initctl
 
 apt-get autoclean
 rm -rf /tmp/* $HOME/.bash_history
-
+rm ./chroot_install_vbox_guest_additions.sh
+rm ./chroot_debian_cmds.sh
 export HISTSIZE=0
 exit
