@@ -62,7 +62,7 @@ apt-get install -y \
     linux-headers-amd64
 
 # Set a custom hostname
-echo "debian-${DEBIAN_RELEASE}-image" > /etc/hostname
+echo "debian-image-${DEBIAN_RELEASE}" > /etc/hostname
 
 # Configure the network interfaces
 cat <<EOF > /etc/network/interfaces

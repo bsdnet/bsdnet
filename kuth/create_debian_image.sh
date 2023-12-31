@@ -5,7 +5,7 @@ set -e
 DEBIAN_RELEASE=bookworm
 DEBIAN_ARCH=amd64
 DEBIAN_WORKDIR="$HOME"/debian-image-from-scratch
-RAW_DEBIAN_IMAGE_PATH=${DEBIAN_WORKDIR}/debian-${DEBIAN_RELEASE}-image.raw
+RAW_DEBIAN_IMAGE_PATH=${DEBIAN_WORKDIR}/debian-image-${DEBIAN_RELEASE}.raw
 DEBIAN_CACHEDIR="$HOME"/debian-cache
 
 # Scripts to be copied into target machine

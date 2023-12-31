@@ -4,7 +4,7 @@ set -e
 
 DEBIAN_RELEASE=bookworm
 DEBIAN_WORKDIR="$HOME"/debian-image-from-scratch
-RAW_DEBIAN_IMAGE_PATH=${DEBIAN_WORKDIR}/debian-${DEBIAN_RELEASE}-image.raw
+RAW_DEBIAN_IMAGE_PATH=${DEBIAN_WORKDIR}/debian-image-${DEBIAN_RELEASE}.raw
 
 function prepare_mountpoints_before_chroot {
   # Configure external mount points

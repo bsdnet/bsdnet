@@ -3,9 +3,9 @@ set -x
 set -e
 
 DEBIAN_RELEASE=bookworm
-DEBIAN_BASE_IMAGE=debian-${DEBIAN_RELEASE}-base-image
+DEBIAN_BASE_IMAGE=debian-base-image-${DEBIAN_RELEASE}
 DEBIAN_WORKDIR=$HOME/debian-image-from-scratch
-RAW_DEBIAN_IMAGE_PATH=${DEBIAN_WORKDIR}/debian-${DEBIAN_RELEASE}-image.raw
+RAW_DEBIAN_IMAGE_PATH=${DEBIAN_WORKDIR}/debian-image-${DEBIAN_RELEASE}.raw
 
 # Create the VM
 vboxmanage createvm --name ${DEBIAN_BASE_IMAGE} --ostype Debian_64 --register
