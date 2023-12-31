@@ -43,7 +43,7 @@ mkdir ${DEBIAN_WORKDIR}
 
 # Use local cache if possible
 if [[ ! -d ${DEBIAN_CACHEDIR} ]]; then
-	mkdir ${DEBIAN_CACHEDIR}
+  mkdir ${DEBIAN_CACHEDIR}
 fi
 
 # Create an empty virtual harddriver file (30Gb)
