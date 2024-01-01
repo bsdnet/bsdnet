@@ -115,10 +115,8 @@ GRUB_CMDLINE_LINUX_DEFAULT="quiet splash nomodeset"
 GRUB_CMDLINE_LINUX=""
 EOF
 
-# Install grub
+# Install and update grub configuration
 grub-install --target x86_64-efi
-
-# Update grub configuration
 update-grub
 
 # Make it bootable for Virtualbox
@@ -133,11 +131,9 @@ truncate -s 0 /etc/machine-id
 
 # Remove the diversion
 rm /sbin/initctl
-
 dpkg-divert --rename --remove /sbin/initctl
 
 # Clean up
-
 apt-get autoclean
 rm -rf /tmp/* $HOME/.bash_history
 rm ./chroot_install_vbox_guest_additions.sh
