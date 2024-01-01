@@ -125,6 +125,8 @@ cp /boot/efi/EFI/debian/fbx64.efi /boot/efi/EFI/BOOT/bootx64.efi
 
 # Install VirtualBox Guest Additions
 ./chroot_install_vbox_guest_additions.sh
+./chroot_install_additional_packages.sh
+./chroot_install_kubernetes.sh
 
 # Reset machine id
 truncate -s 0 /etc/machine-id
