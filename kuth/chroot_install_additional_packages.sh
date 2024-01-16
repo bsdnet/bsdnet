@@ -15,4 +15,6 @@ apt-get install -y           \
   tmux                       \
   dnsmasq                    \
   haproxy                    \
-  keepalived
+  keepalived                 \
+  avahi-daemon               \
+  avahi-utils
