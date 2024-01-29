@@ -2,12 +2,12 @@
 set -x
 set -e
 
-KUTH_REPO_PATH=${KUTH_REPO:-$HOME/workspace/bsdnet/kuth}
+KUTH_REPO_PATH=${KUTH_REPO:-$HOME/workspace/kubernetes-under-the-hood}
 NUM_OF_CP_NODES=${NUM_OF_CP_NODES:-3}
 NUM_OF_WORKER_NODES=${NUM_OF_WORKER_NODES:-3}
 CLUSTER_ROLE=Standalone # Standalone Management, User, Infrastructure
 NODE_ROLE= #GATEWAY, BUSYBOX, LOAD-BALANCER, CONTROL-PLANE, WORKER, STORAGE
-DEBIAN_BASE_IMAGE=
+DEBIAN_BASE_IMAGE="debian-base-image-bookworm"
 
 # Create Gateway
 pushd $KUTH_REPO_PATH
@@ -49,6 +49,7 @@ for INSTANCE in kube-mast01 kube-mast02 kube-mast03; do
 done
 
 # Create worker node.
+: <<COMMENT
 for INSTANCE in kube-node01 kube-node02 kube-node03; do
     ./create-image.sh \
         -k ~/.ssh/id_rsa.pub \
@@ -60,5 +61,6 @@ for INSTANCE in kube-node01 kube-node02 kube-node03; do
         -l debian \
         -b ${DEBIAN_BASE_IMAGE}
 done
+COMMENT
 
 popd $KUTH_REPO_PATH
