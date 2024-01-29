@@ -7,15 +7,20 @@ Those scripts will make testing and optimizing easier.
 
 ## Roadmap
 
-Different from the original repo, I did a lot of  improvements:
-- Use modern GPT partition, not MBR partition.
-- Partition scheme is more sophisticated.
-- Debian Image is the latest.
-- Kubernete Release is the latest.
+Different from the original repo, I did a lot of improvements:
+- Use modern GPT partition, not MBR partition. Status: DONE.
+- Partition scheme is more sophisticated - A/B partition.
+- Debian image is the latest, bookworm. Status: DONE.
+- Kubernete release is the latest 1.29. Status: DONE.
 - Update some key components - Loadbalancing, Networking, Storage.
+- Load balancing, use keepalived and haproxy instead.
+- Networking - use Cilium instead
+- Image, use mkosi instead, not debootstrap
 - Use preloading rather than cloud-init for speeding.
 - Enable the work to be done across multiple infrastructure.
 - Additional footprint for easier experiments.
+- Flexible cluster architecture: 1 node, 3 node, 1+1 node, 3+1 node
+- Control Plane and Data plan are in different networks.
 
 ## References
 ### Secure Boot
