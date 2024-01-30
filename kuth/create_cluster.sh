@@ -32,9 +32,6 @@ pushd $KUTH_REPO_PATH
   -l debian \
   -b ${DEBIAN_BASE_IMAGE}
 
-sudo ip route add 192.168.4.32/27 via 192.168.4.62 dev vboxnet0
-vboxmanage guestproperty get busybox "/VirtualBox/GuestInfo/Net/0/V4/IP"
-
 # Create CP nodes
 for INSTANCE in kube-mast01 kube-mast02 kube-mast03; do
     ./create-image.sh \
@@ -47,6 +44,9 @@ for INSTANCE in kube-mast01 kube-mast02 kube-mast03; do
         -l debian \
         -b ${DEBIAN_BASE_IMAGE}
 done
+
+sudo ip route add 192.168.4.32/27 via 192.168.4.62 dev vboxnet0
+vboxmanage guestproperty get busybox "/VirtualBox/GuestInfo/Net/0/V4/IP"
 
 # Create worker node.
 : <<COMMENT
