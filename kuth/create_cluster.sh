@@ -63,4 +63,4 @@ for INSTANCE in kube-node01 kube-node02 kube-node03; do
 done
 COMMENT
 
-popd $KUTH_REPO_PATH
+popd

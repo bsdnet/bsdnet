@@ -6,5 +6,8 @@
 ## Steps
 
 ### Run create_debian_image.sh
+# Create the image and add it into Vbox
+./create_debian_image.sh
 
-
+# Create a 5 node cluster
+./create_cluster.sh
