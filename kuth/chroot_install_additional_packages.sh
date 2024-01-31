@@ -13,6 +13,7 @@ apt-get install -y           \
   dnsutils                   \
   less                       \
   tmux                       \
+  vim                        \
   dnsmasq                    \
   haproxy                    \
   keepalived                 \

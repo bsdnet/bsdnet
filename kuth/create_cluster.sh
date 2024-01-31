@@ -3,11 +3,23 @@ set -x
 set -e
 
 KUTH_REPO_PATH=${KUTH_REPO:-$HOME/workspace/kubernetes-under-the-hood}
-NUM_OF_CP_NODES=${NUM_OF_CP_NODES:-3}
-NUM_OF_WORKER_NODES=${NUM_OF_WORKER_NODES:-3}
+NUM_OF_CP_NODES=${NUM_OF_CP_NODES:-1}
+CP_NODES_ARRAY=(kube-mast01 kube-mast02 kube-mast03)
+NUM_OF_WORKER_NODES=${NUM_OF_WORKER_NODES:-1}
+WORKER_NODES_ARRAY=(kube-node01 kube-node02 kube-node03)
 CLUSTER_ROLE=Standalone # Standalone Management, User, Infrastructure
 NODE_ROLE= #GATEWAY, BUSYBOX, LOAD-BALANCER, CONTROL-PLANE, WORKER, STORAGE
 DEBIAN_BASE_IMAGE="debian-base-image-bookworm"
+
+# Update the control plane node array
+if [[ ${NUM_OF_CP_NODES} == 1 ]]; then
+  CP_NODES_ARRAY=(kube-mast01)
+fi
+
+# Update the worker node array
+if [[ ${NUM_OF_WORKER_NODES} == 1 ]]; then
+  WORKER_NODES_ARRAY=(kube-node01)
+fi
 
 # Create Gateway
 pushd $KUTH_REPO_PATH
@@ -33,7 +45,7 @@ pushd $KUTH_REPO_PATH
   -b ${DEBIAN_BASE_IMAGE}
 
 # Create CP nodes
-for INSTANCE in kube-mast01 kube-mast02 kube-mast03; do
+for INSTANCE in ${CP_NODES_ARRAY[@]}; do
     ./create-image.sh \
         -k ~/.ssh/id_rsa.pub \
         -u kube-mast/user-data \
@@ -50,7 +62,7 @@ vboxmanage guestproperty get busybox "/VirtualBox/GuestInfo/Net/0/V4/IP"
 
 # Create worker node.
 : <<COMMENT
-for INSTANCE in kube-node01 kube-node02 kube-node03; do
+for INSTANCE in ${WORK_NODES_ARRAY[@]}; do
     ./create-image.sh \
         -k ~/.ssh/id_rsa.pub \
         -u kube-node/user-data \
