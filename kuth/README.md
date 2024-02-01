@@ -13,14 +13,15 @@ Different from the original repo, I did a lot of improvements:
 - Debian image is the latest, bookworm. Status: DONE.
 - Kubernete release is the latest 1.29. Status: DONE.
 - Update some key components - Loadbalancing, Networking, Storage.
-- Load balancing, use keepalived and haproxy instead.
-- Networking - use Cilium instead
+- Load balancing, use keepalived and haproxy instead. Status: DONE
+- Networking - use Cilium instead. Status: DONE.
 - Image, use mkosi instead, not debootstrap
 - Use preloading rather than cloud-init for speeding.
 - Enable the work to be done across multiple infrastructure.
 - Additional footprint for easier experiments.
 - Flexible cluster architecture: 1 node, 3 node, 1+1 node, 3+1 node
 - Control Plane and Data plan are in different networks.
+- Have a default Gateway API or Ingress installed.
 
 ## References
 ### Secure Boot
