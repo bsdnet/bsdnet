@@ -58,7 +58,7 @@ for INSTANCE in ${CP_NODES_ARRAY[@]}; do
 done
 
 # Create worker node.
-for INSTANCE in ${WORK_NODES_ARRAY[@]}; do
+for INSTANCE in ${WORKER_NODES_ARRAY[@]}; do
     ./create-image.sh \
         -k ~/.ssh/id_rsa.pub \
         -u kube-node/user-data \
