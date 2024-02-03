@@ -9,7 +9,7 @@ RAW_DEBIAN_IMAGE_PATH=${DEBIAN_WORKDIR}/debian-image-${DEBIAN_RELEASE}.raw
 DEBIAN_CACHEDIR="$HOME"/debian-cache
 
 # Scripts to be copied into target machine
-CHROOT_DEBIAN_CMDS=chroot_debian_cmds.sh
+CHROOT_DEBIAN_STARTUP_SCRIPT=chroot_debian_startup_script.sh
 CHROOT_VBOX_GUEST_ADDITIONS=chroot_install_vbox_guest_additions.sh
 
 function prepare_mountpoints_before_chroot {
@@ -94,7 +94,7 @@ sudo debootstrap \
    http://deb.debian.org/debian/
 
 # Copy scripts into chroot
-sudo cp ${CHROOT_DEBIAN_CMDS}          "${DEBIAN_WORKDIR}"/chroot/
+sudo cp ${CHROOT_DEBIAN_STARTUP_SCRIPT}          "${DEBIAN_WORKDIR}"/chroot/
 sudo cp ${CHROOT_VBOX_GUEST_ADDITIONS} "${DEBIAN_WORKDIR}"/chroot/
 sudo cp chroot_install_additional_packages.sh  "${DEBIAN_WORKDIR}"/chroot/
 sudo cp chroot_install_kubernetes.sh "${DEBIAN_WORKDIR}"/chroot/
@@ -103,7 +103,7 @@ sudo cp chroot_install_kubernetes.sh "${DEBIAN_WORKDIR}"/chroot/
 prepare_mountpoints_before_chroot
 
 # Chroot and execute the script
-sudo chroot "${DEBIAN_WORKDIR}"/chroot ./${CHROOT_DEBIAN_CMDS}
+sudo chroot "${DEBIAN_WORKDIR}"/chroot ./${CHROOT_DEBIAN_STARTUP_SCRIPT}
 
 # Clean up
 cleanup_after_chroot

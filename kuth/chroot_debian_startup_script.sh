@@ -139,6 +139,6 @@ dpkg-divert --rename --remove /sbin/initctl
 apt-get autoclean
 rm -rf /tmp/* $HOME/.bash_history
 rm ./chroot_install_vbox_guest_additions.sh
-rm ./chroot_debian_cmds.sh
+rm ./chroot_debian_startup_script.sh
 export HISTSIZE=0
 exit
