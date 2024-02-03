@@ -57,11 +57,7 @@ for INSTANCE in ${CP_NODES_ARRAY[@]}; do
         -b ${DEBIAN_BASE_IMAGE}
 done
 
-sudo ip route add 192.168.4.32/27 via 192.168.4.62 dev vboxnet0
-vboxmanage guestproperty get busybox "/VirtualBox/GuestInfo/Net/0/V4/IP"
-
 # Create worker node.
-: <<COMMENT
 for INSTANCE in ${WORK_NODES_ARRAY[@]}; do
     ./create-image.sh \
         -k ~/.ssh/id_rsa.pub \
@@ -73,6 +69,8 @@ for INSTANCE in ${WORK_NODES_ARRAY[@]}; do
         -l debian \
         -b ${DEBIAN_BASE_IMAGE}
 done
-COMMENT
+
+vboxmanage guestproperty get busybox "/VirtualBox/GuestInfo/Net/0/V4/IP"
+sudo ip route add 192.168.4.32/27 via 192.168.4.62 dev vboxnet0
 
 popd
